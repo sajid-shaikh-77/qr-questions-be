@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { Admin } from "../models/admin.model.js";
 import { ApiError } from "../utils/apiErrorHandler";
 import { ApiResponse } from "../utils/apiResponseHandler.js";
@@ -63,6 +64,110 @@ const loginAdmin = asyncHandler(async (req, res) => {
         )
 })
 
+const logoutAdmin = asyncHandler(async (req, res) => {
+    await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "User loggged out"
+            )
+        )
+})
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    try {
+        const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+        if (!incomingRefreshToken) {
+            throw new ApiError(401, "Unautorised request");
+        }
+        const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
+        const admin = await Admin.findById(decodedToken?._id)
+        if (!user) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+        if (incomingRefreshToken !== user?.refreshToken) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+
+        const options = {
+            httpOnly: true,
+            // secure: true,
+            sameSite: "lax" // Add this too
+        }
+        const { accessToken, refreshToken } = await generateAccessAndRefereshToken(admin._id)
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        accessToken,
+                        refreshToken
+                    },
+                    "Access token generated successfully ! "
+                )
+            )
+    } catch (error) {
+        throw new ApiError(401, error?.message || 'Invalid Refresh Token');
+    }
+})
+const changeAdminPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body
+    const admin = await Admin.findById(req?.admin?._id)
+    const isPasswordCorrect = await admin.isPasswordCorrect(oldPassword)
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old Password");
+
+    }
+    admin.password = newPassword
+    await admin.save({ validateBeforeSave: false })
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Password changed sucessfully"
+            )
+        )
+})
+const getCurrentAdmin = asyncHandler(async (req,res) =>{
+    return res
+            .status(200)
+            json(
+                new ApiResponse(
+                    200,
+                    req.admin,
+                    "Current user fetchd successfully !"
+
+                )
+            )
+})
 export {
-    loginAdmin
+    loginAdmin,
+    logoutAdmin,
+    refreshAccessToken,
+    changeAdminPassword
 }
