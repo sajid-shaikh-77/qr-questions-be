@@ -19,6 +19,40 @@ const generateAccessAndRefereshToken = async (adminId) => {
     }
 }
 
+const registerAdmin = async (req, res) => {
+    const { email, fullName, password } = req.body
+    if ([email, fullName, password].some((field) => field.trim() === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
+    const existedUser = await Admin.findOne({
+        $or: [{ email }
+        ]
+    })
+    if (existedUser) {
+        throw new ApiError(409, "User already Exist");
+    }
+
+    const admin = await Admin.create({
+        fullName,
+        email,
+        password
+    })
+
+    const createdAdmin = await Admin.findById(admin._id).select("-password -refreshToken")
+    if (!createdAdmin) {
+        throw new ApiError(500, "Something went wrong while creating a user");
+
+    }
+    return res.status(201).json(
+        new ApiResponse(
+            200,
+            createdAdmin,
+            "Admin Register successfully "
+        )
+    )
+}
+
+
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     if (!email) {
@@ -153,21 +187,23 @@ const changeAdminPassword = asyncHandler(async (req, res) => {
             )
         )
 })
-const getCurrentAdmin = asyncHandler(async (req,res) =>{
+const getCurrentAdmin = asyncHandler(async (req, res) => {
     return res
-            .status(200)
-            json(
-                new ApiResponse(
-                    200,
-                    req.admin,
-                    "Current user fetchd successfully !"
+        .status(200)
+    json(
+        new ApiResponse(
+            200,
+            req.admin,
+            "Current user fetchd successfully !"
 
-                )
-            )
+        )
+    )
 })
 export {
+    registerAdmin,
     loginAdmin,
     logoutAdmin,
     refreshAccessToken,
-    changeAdminPassword
+    changeAdminPassword,
+    getCurrentAdmin
 }
