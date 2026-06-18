@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Admin } from "../models/admin.model.js";
-import { ApiError } from "../utils/apiErrorHandler";
+import { ApiError } from "../utils/apiErrorHandler.js";
 import { ApiResponse } from "../utils/apiResponseHandler.js";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const generateAccessAndRefereshToken = async (adminId) => {
     try {
@@ -19,7 +19,7 @@ const generateAccessAndRefereshToken = async (adminId) => {
     }
 }
 
-const registerAdmin = async (req, res) => {
+const registerAdmin = asyncHandler(async (req, res) => {
     const { email, fullName, password } = req.body
     if ([email, fullName, password].some((field) => field.trim() === "")) {
         throw new ApiError(400, "All fields are required");
@@ -50,7 +50,7 @@ const registerAdmin = async (req, res) => {
             "Admin Register successfully "
         )
     )
-}
+})
 
 
 const loginAdmin = asyncHandler(async (req, res) => {
