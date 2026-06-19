@@ -54,7 +54,9 @@ const registerAdmin = asyncHandler(async (req, res) => {
 
 
 const loginAdmin = asyncHandler(async (req, res) => {
+    console.log("1 enter in Function")
     const { email, password } = req.body
+    console.log("2 🚀 ~ req.body:", req.body)
     if (!email) {
         throw new ApiError(400, "email is required");
     }
@@ -62,6 +64,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     const admin = await Admin.findOne({
         $or: [{ email }]
     })
+    console.log("3 🚀 ~ finding admin:", admin)
 
     if (!admin) {
         throw new ApiError(404, "User not found");
