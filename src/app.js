@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import express from "express";
 import cors from "cors"
+
 const app = express()
 // app.use(cors())
 
@@ -16,6 +17,9 @@ app.use(cookieParser()) // * set | access cookies
 
 
 
+
+import adminRouter from './routes/admin.routes.js'
 // * routes declaration
-// app.use("/api/v1/users",userRouter)  
+app.use("/api/v1/admin",adminRouter)
+
 export { app }
