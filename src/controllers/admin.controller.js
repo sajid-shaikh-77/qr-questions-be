@@ -77,8 +77,8 @@ const loginAdmin = asyncHandler(async (req, res) => {
     const loggedInAdmin = await Admin.findById(admin._id).select("-password -refreshToken")
     const options = {
         httpOnly: true,
-        // secure: true,
-        sameSite: "lax" // Add this too
+        secure: true,
+        // sameSite: "lax" // Add this too
     }
 
     return res
@@ -145,8 +145,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
         const options = {
             httpOnly: true,
-            // secure: true,
-            sameSite: "lax" // Add this too
+            secure: true,
+            // sameSite: "lax" // Add this too
         }
         const { accessToken, refreshToken } = await generateAccessAndRefereshToken(admin._id)
         return res
