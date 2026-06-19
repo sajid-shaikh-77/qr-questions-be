@@ -22,4 +22,4 @@ import adminRouter from './routes/admin.routes.js'
 // * routes declaration
 app.use("/api/v1/admin",adminRouter)
 
-export { app }
+export default app;
