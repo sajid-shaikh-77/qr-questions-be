@@ -1,6 +1,5 @@
 import app from "../src/app.js"
 import dotenv from 'dotenv'
-import app  from './app.js'
 import connectDB from "../src/db/index.js"
 dotenv.config({
     path: './env'
@@ -15,5 +14,4 @@ await connectDB()
     .catch((error) => {
         console.error("🚀 ~ MongoDB Connection Error:", error)
     })
-    
 export default app;
