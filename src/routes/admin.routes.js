@@ -4,7 +4,7 @@ import { loginAdmin, registerAdmin } from "../controllers/admin.controller.js";
 const router = Router();
 
 router.route("/register").post(registerAdmin)
-router.route("/register").post(loginAdmin)
+router.route("/login").post(loginAdmin)
 
 
 
