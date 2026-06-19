@@ -15,7 +15,13 @@ app.use(express.urlencoded({ extended: true, limit: "16Kb" })) // * extended use
 app.use(express.static("public")) // * save file images
 app.use(cookieParser()) // * set | access cookies 
 
-
+// Root route
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        message: "Backend is running"
+    });
+});
 
 
 import adminRouter from './routes/admin.routes.js'
