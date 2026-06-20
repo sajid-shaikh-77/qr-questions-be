@@ -26,6 +26,27 @@ app.get("/", (req, res) => {
 
 import adminRouter from './routes/admin.routes.js'
 // * routes declaration
-app.use("/api/v1/admin",adminRouter)
+app.use("/api/v1/admin", adminRouter)
+
+
+
+
+
+
+
+
+
+// Error middleware MUST be last
+app.use((err, req, res, next) => {
+    console.error(err);
+
+    res.status(err.statusCode || 500).json({
+        success: false,
+        message: err.message || "Internal Server Error",
+        errors: err.errors || [],
+        data: null
+    });
+});
+
 
 export default app;
