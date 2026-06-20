@@ -61,9 +61,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
         throw new ApiError(400, "email is required");
     }
 
-    const admin = await Admin.findOne({
-        $or: [{ email }]
-    })
+    const admin = await Admin.findOne({ email })
     console.log("3 🚀 ~ finding admin:", admin)
 
     if (!admin) {
